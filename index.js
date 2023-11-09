@@ -14,15 +14,12 @@ console.log(process.env.DB_PASS);
 app.use(
   cors({
     origin: [
-      
-      // "http://localhost:5173"
+      // "http://localhost:5173",
 
       "https://restaurant-manage-4ccbf.web.app",
 
-  "https://restaurant-manage-4ccbf.firebaseapp.com"
-  
-  
-  ],
+      "https://restaurant-manage-4ccbf.firebaseapp.com",
+    ],
     credentials: true,
   })
 );
@@ -53,7 +50,7 @@ const verifytoken = async (req, res, next) => {
   }
   jwt.verify(token, process.env.ACCESS_TOKEN, (err, decoded) => {
     if (err) {
-     return res.status(401).send({ message: "unauthorized access" });
+      return res.status(401).send({ message: "unauthorized access" });
     }
     req.user = decoded;
     next();
@@ -64,7 +61,6 @@ const verifytoken = async (req, res, next) => {
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
 
     const foodCollection = client.db("restaurant").collection("foods");
     const purchaseCollection = client.db("restaurant").collection("purchase");
@@ -83,8 +79,8 @@ async function run() {
       res
         .cookie("token", token, {
           httpOnly: true,
-          secure: false,
-          sameSite: "strict",
+          secure: true,
+          sameSite: "none",
         })
         .send({ success: true });
     });
@@ -92,7 +88,9 @@ async function run() {
     app.post("/logout", async (req, res) => {
       const user = req.body;
 
-      res.clearCookie("token", { maxAge: 0 }).send({ success: true });
+      res
+        .clearCookie("token", { maxAge: 0, secure: true, sameSite: "none" })
+        .send({ success: true });
     });
 
     // service
@@ -103,7 +101,7 @@ async function run() {
       res.send(result);
     });
 
-    app.get("/foods", verifytoken,async (req, res) => {
+    app.get("/foods", async (req, res) => {
       const page = parseInt(req.query.page);
       const size = parseInt(req.query.size);
 
@@ -164,10 +162,8 @@ async function run() {
 
     app.get("/purchase", logger, verifytoken, async (req, res) => {
       if (req.user.email !== req.query.email) {
-        
-         res.status(403).send({ message: "forbidden access" });
-         return
-    
+        res.status(403).send({ message: "forbidden access" });
+        return;
       }
 
       let query = {};
