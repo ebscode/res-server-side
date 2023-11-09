@@ -217,5 +217,5 @@ app.get("/", (req, res) => {
 });
 
 app.listen(port, () => {
-  console.log(`restaurant server is onn gooo${port}`);
+  console.log(`restaurant server is onn good${port}`);
 });
