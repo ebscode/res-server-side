@@ -10,7 +10,7 @@ const port = process.env.PORT || 5000;
 
 console.log(process.env.DB_PASS);
 
-// const app=use
+
 
 // middleware
 app.use(
