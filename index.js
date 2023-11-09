@@ -10,6 +10,8 @@ const port = process.env.PORT || 5000;
 
 console.log(process.env.DB_PASS);
 
+// const app=use
+
 // middleware
 app.use(
   cors({
@@ -74,7 +76,7 @@ async function run() {
       const token = jwt.sign(user, process.env.ACCESS_TOKEN, {
         expiresIn: "1h",
       });
-      console.log(token)
+      // console.log(token)
 
       res
         .cookie("token", token, {
